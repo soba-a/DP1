@@ -5,7 +5,7 @@ import math as m
 rx, ry, rz, warm, fact = sp.symbols('rx, ry, rz, warm, fact')
 
 # givens
-wbre = 2 * 9.81
+wbre = 2 * 9.81 
 Fresz = 40
 L = 410.07
 pul_PD = 3 * 25.4 # in mm
@@ -49,13 +49,13 @@ Ft1V = sp.Matrix([-T1 * np.sin(beta), 0, T1 * np.cos(beta)]).T
 Ft2V = sp.Matrix([-T2 * np.sin(beta), 0, -T2 * np.cos(beta)]).T
 WbreV = sp.Matrix([0, 0, -wbre]).T
 FresV = sp.Matrix([Fresx, 0, Fresz]).T
-# print("RpivV =", RpivV)
-# print("RactV =", RactV)
-# print("WarmV =", WarmV)
-# print("Ft1V =", Ft1V)
-# print("Ft2V =", Ft2V)
-# print("WbreV =", WbreV)
-# print("FresV =", FresV)
+print("RpivV =", RpivV)
+print("RactV =", RactV)
+print("WarmV =", WarmV)
+print("Ft1V =", Ft1V)
+print("Ft2V =", Ft2V)
+print("WbreV =", WbreV)
+print("FresV =", FresV)
 
 # Moment calculated with respect to pin1
 MRpiv = Rpiv_loc.cross(RpivV)
@@ -67,13 +67,13 @@ MWbre = Wbre_loc.cross(WbreV)
 MFres = Fres_loc.cross(FresV)
 Mpin_armx, Mpin_armz = sp.symbols('Mpin_armx, Mpin_armz')
 Mpin_arm = sp.Matrix([Mpin_armx, 0, Mpin_armz]).T # Resistant moment on arm by pin
-# print("MRpiv =", MRpiv)
-# print("MRact =", MRact)
-# print("MWarm =", MWarm)
-# print("MFt1 =", MFt1)
-# print("MFt2 =", MFt2)
-# print("MWbre =", MWbre)
-# print("MFres =", MFres)
+print("MRpiv =", MRpiv)
+print("MRact =", MRact)
+print("MWarm =", MWarm)
+print("MFt1 =", MFt1)
+print("MFt2 =", MFt2)
+print("MWbre =", MWbre)
+print("MFres =", MFres)
 
 Ftot = RpivV + RactV + WarmV + Ft1V + Ft2V + WbreV + FresV
 Mpin1 = MRpiv + MRact + MWarm + MFt1 + MFt2 + MWbre + MFres + Mpin_arm
@@ -105,21 +105,22 @@ FactV = RactV
 
 ## BASED ON ABOVE, WE HAVE ALL FORCES AND MOMENTS ACTING ON THE ARM!!!
 # PRINT THEM HERE:
-# print("RpivV =", RpivV)
-# print("FactV =", FactV)
-# print("WarmV =", WarmV)
-# print("Ft1V =", Ft1V)
-# print("Ft2V =", Ft2V)
-# print("WbreV =", WbreV)
-# print("FresV =", FresV)
-# print("MRpiv =", MRpiv)
-# print("MRact =", MRact)
-# print("MWarm =", MWarm)
-# print("MFt1 =", MFt1)
-# print("MFt2 =", MFt2)
-# print("MWbre =", MWbre)
-# print("MFres =", MFres)
-# print("Mpin_arm =", Mpin_arm)
+print("RpivV =", RpivV)
+print("FactV =", FactV)
+print("WarmV =", WarmV)
+print("Ft1V =", Ft1V)
+print("Ft2V =", Ft2V)
+print("WbreV =", WbreV)
+print("FresV =", FresV)
+print("MRpiv =", MRpiv)
+print("MRact =", MRact)
+print("MWarm =", MWarm)
+print("MFt1 =", MFt1)
+print("MFt2 =", MFt2)
+print("MWbre =", MWbre)
+print("MFres =", MFres)
+print("Mpin_arm =", Mpin_arm)
+
 
 ############################################
 # rotate coords https://www.vcalc.com/wiki/vCalc/Circle%20-%20Radius%20from%20chord%20length%20and%20arc%20height
@@ -143,20 +144,17 @@ MFt1_A = (A * MFt1.T).T
 MFt2_A = (A * MFt2.T).T
 MWbre_A = (A * MWbre.T).T
 MFres_A = (A * MFres.T).T
+Mpin_arm_A = (A * Mpin_arm.T).T
 
-# print("RpivV_A =", RpivV_A)
-# print("FactV_A =", FactV_A)
-# print("WarmV_A =", WarmV_A)
-# print("Ft1V_A =", Ft1V_A)
-# print("Ft2V_A =", Ft2V_A)
-# print("WbreV_A =", WbreV_A)
-# print("FresV_A =", FresV_A)
-# print("MRpiv_A =", MRpiv_A)
-# print("MFact_A =", MFact_A)
-# print("MWarm_A =", MWarm_A)
-# print("MFt1_A =", MFt1_A)
-# print("MFt2_A =", MFt2_A)
-# print("MWbre_A =", MWbre_A)
+print("RpivV_A =", RpivV_A)
+print("MRpiv_A =", MRpiv_A)
+print("MRact_A =", MRact_A)
+print("MWarm_A =", MWarm_A)
+print("MFt1_A =", MFt1_A)
+print("MFt2_A =", MFt2_A)
+print("MWbre_A =", MWbre_A)
+print("MFres_A =", MFres_A)
+print("Mpin_arm_A =", Mpin_arm_A)
 
 ############################################
 # Let's look at pin1 here
@@ -199,10 +197,63 @@ p2rx1_sol = sp.solve(sysEq3, [p2rx1, p2rz1, p2rx2, p2rz2])[p2rx1]
 p2rz1_sol = sp.solve(sysEq3, [p2rx1, p2rz1, p2rx2, p2rz2])[p2rz1]
 p2rx2_sol = sp.solve(sysEq3, [p2rx1, p2rz1, p2rx2, p2rz2])[p2rx2]
 p2rz2_sol = sp.solve(sysEq3, [p2rx1, p2rz1, p2rx2, p2rz2])[p2rz2]
+# print("p1rx1_sol =", p1rx1_sol)
+# print("p1rz1_sol =", p1rz1_sol)
+# print("p1rx2_sol =", p1rx2_sol)
+# print("p1rz2_sol =", p1rz2_sol)
+
 # print("p2rx1_sol =", p2rx1_sol)
 # print("p2rz1_sol =", p2rz1_sol)
 # print("p2rx2_sol =", p2rx2_sol)
 # print("p2rz2_sol =", p2rz2_sol)
 
-##
+
+# Limiting axial load: (6)
+peak_axial_load = RpivV[0]
+peak_bend_moment_x = MFres_A[0]
+peak_bend_moment_y = MFres_A[1]
+peak_bend_moment_z = Mpin_arm_A[2]
+peak_torque = peak_bend_moment_x
+
+
+# can we approximate and use the approximate formula for stress in curved beam?
+rc = 853.2870245
+rn = (armd/2)**2 / (2*(rc - (rc**2 - (armd/2)**2)**0.5))
+print("rn =", rn)
+print("rc =", rc)
+# yea we can lol
+
+M = (peak_bend_moment_y**2 + peak_bend_moment_z**2)**0.5
+I = np.pi * (armd)**4 / 64
+J = np.pi * (armd)**4 / 32
+y = armd/2
+sigma = M*y / I * rc / r + peak_axial_load / (np.pi * (armd)**2 / 4)
+# using mx with 
+txy = peak_torque * (armd/2) / J
+print("sigma =", sigma)
+print("txy =", txy)
+
+ys = 35000 / 145.03773773 # in MPa
+ys_safety = ys / 2
+print("ys_safety =", ys_safety)
+
+# compare the rotated force and moment values to the original in one line each
+print("RpivV =", RpivV)
+print("Rpiv_A =", RpivV_A)
+print("MRpiv =", MRpiv)
+print("MRpiv_A =", MRpiv_A)
+print("MRact =", MRact)
+print("MRact_A =", MRact_A)
+print("MWarm =", MWarm)
+print("MWarm_A =", MWarm_A)
+print("MFt1 =", MFt1)
+print("MFt1_A =", MFt1_A)
+print("MFt2 =", MFt2)
+print("MFt2_A =", MFt2_A)
+print("MWbre =", MWbre)
+print("MWbre_A =", MWbre_A)
+print("MFres =", MFres)
+print("MFres_A =", MFres_A)
+print("Mpin_arm =", Mpin_arm)
+print("Mpin_arm_A =", Mpin_arm_A)
 
