@@ -227,7 +227,9 @@ M = (peak_bend_moment_y**2 + peak_bend_moment_z**2)**0.5
 I = np.pi * (armd)**4 / 64
 J = np.pi * (armd)**4 / 32
 y = armd/2
-sigma = M*y / I * rc / r + peak_axial_load / (np.pi * (armd)**2 / 4)
+# A = np.pi * (armd)**2 / 4 # solid
+A = np.pi / 4 * ((armd)**2 - (1.93*25.4)**2) # hollow
+sigma = M*y / I * rc / r + peak_axial_load / A
 # using mx with 
 txy = peak_torque * (armd/2) / J
 print("sigma =", sigma)
@@ -237,23 +239,23 @@ ys = 35000 / 145.03773773 # in MPa
 ys_safety = ys / 2
 print("ys_safety =", ys_safety)
 
-# compare the rotated force and moment values to the original in one line each
-print("RpivV =", RpivV)
-print("Rpiv_A =", RpivV_A)
-print("MRpiv =", MRpiv)
-print("MRpiv_A =", MRpiv_A)
-print("MRact =", MRact)
-print("MRact_A =", MRact_A)
-print("MWarm =", MWarm)
-print("MWarm_A =", MWarm_A)
-print("MFt1 =", MFt1)
-print("MFt1_A =", MFt1_A)
-print("MFt2 =", MFt2)
-print("MFt2_A =", MFt2_A)
-print("MWbre =", MWbre)
-print("MWbre_A =", MWbre_A)
-print("MFres =", MFres)
-print("MFres_A =", MFres_A)
-print("Mpin_arm =", Mpin_arm)
-print("Mpin_arm_A =", Mpin_arm_A)
+# # compare the rotated force and moment values to the original in one line each
+# print("RpivV =", RpivV)
+# print("Rpiv_A =", RpivV_A)
+# print("MRpiv =", MRpiv)
+# print("MRpiv_A =", MRpiv_A)
+# print("MRact =", MRact)
+# print("MRact_A =", MRact_A)
+# print("MWarm =", MWarm)
+# print("MWarm_A =", MWarm_A)
+# print("MFt1 =", MFt1)
+# print("MFt1_A =", MFt1_A)
+# print("MFt2 =", MFt2)
+# print("MFt2_A =", MFt2_A)
+# print("MWbre =", MWbre)
+# print("MWbre_A =", MWbre_A)
+# print("MFres =", MFres)
+# print("MFres_A =", MFres_A)
+# print("Mpin_arm =", Mpin_arm)
+# print("Mpin_arm_A =", Mpin_arm_A)
 
