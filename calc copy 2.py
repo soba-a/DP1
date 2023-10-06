@@ -2,8 +2,10 @@ import sympy as sp
 import numpy as np
 import math as m
 
-rx, ry, rz, warm, fact = sp.symbols('rx, ry, rz, warm, fact')
+# rx, ry, rz, warm, fact = sp.symbols('rx, ry, rz, warm, fact')
+rx, ry, rz, fact = sp.symbols('rx, ry, rz, fact')
 
+warm = 1.693 * 9.81
 # givens
 wbre = 2 * 9.81 
 Fresz = 40
@@ -110,22 +112,22 @@ FactV = RactV
 
 ## BASED ON ABOVE, WE HAVE ALL FORCES AND MOMENTS ACTING ON THE ARM!!!
 # PRINT THEM HERE:
-# print("FORCES AND MOMENTS, SOLVED!=======================")
-# print("RpivV =", RpivV)
-# print("FactV =", FactV)
-# print("WarmV =", WarmV)
-# print("Ft1V =", Ft1V)
-# print("Ft2V =", Ft2V)
-# print("WbreV =", WbreV)
-# print("FresV =", FresV)
-# print("MRpiv =", MRpiv)
-# print("MRact =", MRact)
-# print("MWarm =", MWarm)
-# print("MFt1 =", MFt1)
-# print("MFt2 =", MFt2)
-# print("MWbre =", MWbre)
-# print("MFres =", MFres)
-# print("Mpin_arm =", Mpin_arm)
+print("FORCES AND MOMENTS, SOLVED!=======================")
+print("RpivV =", RpivV)
+print("FactV =", FactV)
+print("WarmV =", WarmV)
+print("Ft1V =", Ft1V)
+print("Ft2V =", Ft2V)
+print("WbreV =", WbreV)
+print("FresV =", FresV)
+print("MRpiv =", MRpiv)
+print("MRact =", MRact)
+print("MWarm =", MWarm)
+print("MFt1 =", MFt1)
+print("MFt2 =", MFt2)
+print("MWbre =", MWbre)
+print("MFres =", MFres)
+print("Mpin_arm =", Mpin_arm)
 
 
 ############################################
@@ -133,24 +135,24 @@ FactV = RactV
 r = 853.2870245 # radius of curvature
 theta_prime = np.pi/2 - np.arcsin((r - 25) / r)
 
-A = sp.Matrix([[np.cos(theta_prime), 0, np.sin(theta_prime)], [0, 1, 0], [-1 * np.sin(theta_prime), 0, np.cos(theta_prime)]])
+Aarm = sp.Matrix([[np.cos(theta_prime), 0, np.sin(theta_prime)], [0, 1, 0], [-1 * np.sin(theta_prime), 0, np.cos(theta_prime)]])
 # Forces in A coords
-RpivV_A = (A * RpivV.T).T
-FactV_A = (A * RactV.T).T
-WarmV_A = (A * WarmV.T).T
-Ft1V_A = (A * Ft1V.T).T
-Ft2V_A = (A * Ft2V.T).T
-WbreV_A = (A * WbreV.T).T
-FresV_A = (A * FresV.T).T
+RpivV_A = (Aarm * RpivV.T).T
+FactV_A = (Aarm * RactV.T).T
+WarmV_A = (Aarm * WarmV.T).T
+Ft1V_A = (Aarm * Ft1V.T).T
+Ft2V_A = (Aarm * Ft2V.T).T
+WbreV_A = (Aarm * WbreV.T).T
+FresV_A = (Aarm * FresV.T).T
 # Moments in A coords
-MRpiv_A = (A * MRpiv.T).T
-MRact_A = (A * MRact.T).T
-MWarm_A = (A * MWarm.T).T
-MFt1_A = (A * MFt1.T).T
-MFt2_A = (A * MFt2.T).T
-MWbre_A = (A * MWbre.T).T
-MFres_A = (A * MFres.T).T
-Mpin_arm_A = (A * Mpin_arm.T).T
+MRpiv_A = (Aarm * MRpiv.T).T
+MRact_A = (Aarm * MRact.T).T
+MWarm_A = (Aarm * MWarm.T).T
+MFt1_A = (Aarm * MFt1.T).T
+MFt2_A = (Aarm * MFt2.T).T
+MWbre_A = (Aarm * MWbre.T).T
+MFres_A = (Aarm * MFres.T).T
+Mpin_arm_A = (Aarm * Mpin_arm.T).T
 
 # print("ROTATED FORCES AND MOMENTS AT ORIGIN, SOLVED!=======================")
 # print("RpivV_A =", RpivV_A)
@@ -167,14 +169,14 @@ Mpin_arm_A = (A * Mpin_arm.T).T
 # FINDING CLEVIS ON PIN REATIONS
 
 # Let's look at pin1 here
-armd = 2 * 25.4; # design of arm diameter
+(armod) = 2 * 25.4; # design of arm diameter
 p1rx1, p1rz1, p1rx2, p1rz2 = sp.symbols('p1rx1, p1rz1, p1rx2, p1rz2')
 P1R1 = sp.Matrix([p1rx1, 0, p1rz1]).T
 P1R2 = sp.Matrix([p1rx2, 0, p1rz2]).T
 # P1R1_loc = sp.Matrix([0, -armd/2 + -0.25/2, 0]).T # assuming in the middle of the clevis !WRONG
 # P1R2_loc = sp.Matrix([0, armd/2 + 0.25/2, 0]).T # assuming in the middle of the clevis !WRONG
-P1R1_loc = sp.Matrix([0, -armd/2, 0]).T # assuming at the edge of the clevis (CORRECT)
-P1R2_loc = sp.Matrix([0, armd/2, 0]).T # assuming at the edge of the clevis (CORRECT)
+P1R1_loc = sp.Matrix([0, -(armod)/2, 0]).T # assuming at the edge of the clevis (CORRECT)
+P1R2_loc = sp.Matrix([0, (armod)/2, 0]).T # assuming at the edge of the clevis (CORRECT)
 
 FTOT_P1 = P1R1 + P1R2 + -1 * RpivV # RpivV is the reaction force on the arm by pin1, so flip it to get force on pin by arm
 MTOT_P1 = P1R1_loc.cross(P1R1) + P1R2_loc.cross(P1R2) + -1 * Mpin_arm # same as above, but with moments
@@ -198,8 +200,8 @@ P2R1 = sp.Matrix([p2rx1, 0, p2rz1]).T
 P2R2 = sp.Matrix([p2rx2, 0, p2rz2]).T
 # P2R1_loc = sp.Matrix([0, -armd/2 + -0.25/2, 0]).T # wrong because its at middle of clevis
 # P2R2_loc = sp.Matrix([0, armd/2 + 0.25/2, 0]).T # wrong because its at middle of clevis
-P2R1_loc = sp.Matrix([0, -armd/2, 0]).T # assuming at the edge of the clevis (CORRECT)
-P2R2_loc = sp.Matrix([0, armd/2, 0]).T # assuming at the edge of the clevis (CORRECT)
+P2R1_loc = sp.Matrix([0, -(armod)/2, 0]).T # assuming at the edge of the clevis (CORRECT)
+P2R2_loc = sp.Matrix([0, (armod)/2, 0]).T # assuming at the edge of the clevis (CORRECT)
 
 FTOT_P2 = P2R1 + P2R2 + -1 * RactV.subs([(fact, fact_sol)]) # RactV is the reaction force on the arm by pin2, so flip it to get force on pin by arm
 MP2 = P2R1_loc.cross(P2R1) + P2R2_loc.cross(P2R2) # assume no reaction moments on actuator pin because actuator is truss/2 force member. bc truss do not carry moment
@@ -224,35 +226,40 @@ print("p2rx2_sol =", p2rx2_sol)
 print("p2rz2_sol =", p2rz2_sol)
 
 
-# Limiting axial load (these were visually inspected): (6)
+# Limiting axial load (6)
 peak_axial_load = RpivV[0]
-peak_bend_moment_x = MFres_A[0]
-peak_bend_moment_y = MFres_A[1]
+peak_bend_moment_x = Mpin_arm_A[0]
+peak_bend_moment_y = MFres_A[1] # WRONG
 peak_bend_moment_z = Mpin_arm_A[2]
 peak_torque = peak_bend_moment_x
 
 
 # can we approximate and use the approximate formula for stress in curved beam?
 rc = r # radius of curvature
-rn = (armd/2)**2 / (2*(rc - (rc**2 - (armd/2)**2)**0.5))
+rn = ((armod)/2)**2 / (2*(rc - (rc**2 - ((armod)/2)**2)**0.5))
 # print rn and rc on one line
 print("rn =", rn, "rc =", rc)
 # yea we can lol
 
+armid = 1.5 * 25.4 # inner diameter of arm
+
 # Calculate stress
-M = (peak_bend_moment_y**2 + peak_bend_moment_z**2)**0.5
-I = np.pi * (armd)**4 / 64
-J = np.pi * (armd)**4 / 32
-y = armd/2
-A = np.pi * (armd)**2 / 4 # solid
-# A = np.pi / 4 * ((armd)**2 - (1.93*25.4)**2) # hollow
-sigma = M*y / I * rc / r + peak_axial_load / A
+M = peak_bend_moment_z
+# I = np.pi * (armd)**4 / 64 # solid
+Iarm = np.pi * (armod)**4 / 64 - np.pi  * (armid)**4 / 64 # hollow
+print("I =", Iarm)
+Jarm = np.pi * (armod)**4 / 32 - np.pi  * (armid)**4 / 32 # hollow
+print("J =", Jarm)
+y = (armod)/2
+# A = np.pi * (armd)**2 / 4 # solid
+Aarm = np.pi / 4 * ((armod)**2 - (armid)**2) # hollow
+sigmax = M*y / Iarm * rc / ((armod)/2) + peak_axial_load / Aarm
 # using mx with 
-txy = peak_torque * (armd/2) / J
-print("sigma =", sigma)
+txy = peak_torque * ((armod)/2) / Jarm
+print("sigma =", sigmax)
 print("txy =", txy)
 
-ys = 35000 / 145.03773773 # in MPa
+ys = 35000 / 145.03773773 # in MPa # design
 ys_safety = ys / 2
 print("ys_safety =", ys_safety)
 
@@ -276,4 +283,88 @@ print("ys_safety =", ys_safety)
 # print("Mpin_arm =", Mpin_arm)
 # print("Mpin_arm_A =", Mpin_arm_A)
 
-#assuem beam is straight for deflections
+#assume beam is straight for deflections
+
+
+# Calculate My at actuator, from pov of actuator pin
+rpivlocation = sp.Matrix([-L/2, 0, -1 * cpiv_off]).T
+warmlocation = sp.Matrix([-L/4, 0, -1 * cpiv_off]).T
+My_actuator = rpivlocation.cross(RpivV)
+Mwarm_actuator = warmlocation.cross(WarmV)
+My_actuator_total = My_actuator + Mwarm_actuator
+# print("My_actuator_total =", My_actuator_total) # run this value
+
+rpivlocation = rpivlocation + sp.Matrix([-L/2, 0, 0]).T
+warmlocation = sp.Matrix([-L/2, 0, -1 * cpiv_off]).T
+
+My_actuator = rpivlocation.cross(RpivV)
+Mwarm_actuator = warmlocation.cross(WarmV)
+Mract_actuator = warmlocation.cross(RactV)
+
+My_actuator_total = My_actuator + Mwarm_actuator + Mract_actuator
+# print("My_actuator_total =", My_actuator_total)
+
+# print maximum stresses
+print("Maximum Axial Stress @ Pivot Pin =", sigmax)
+print("Maximum Torsional Stress @ Pivot Pin =", txy)
+vonmise_sigma = ((sigmax)**2 + 3 * txy**2)**0.5
+print("Von Mises Stress @ Pivot Pin =", vonmise_sigma)
+print("Yield Stress, with Safety =", ys_safety)
+
+### Calculate pin arm contact stresses
+Fapp = RpivV[0]
+# print("Fapp =", Fapp)
+
+# pin details: 4140 Alloy Steel
+pd = 0.25 * 25.4 # pin diameter in mm
+Ep = 190 * 10**9 # modulus of elasticity in Pa, converted from GPa
+# Ep = 190 * 10**9
+vp = 0.28 # possion's ratio
+
+# arm details: 6061 Aluminum, 1/4" walls, 1" OD
+# this on on the hole! using h8f7 tolerance
+armw = (armod - armid) / 2
+ph = pd + 0.022 # pin hole diameter in mm
+Earm = 69 * 10**9 # modulus of elasticity in Pa, converted from GPa
+# Earm = 71.7 * 10**9
+varm = 0.333 # possion's ratio
+
+l = (armw) #length of contact patch is 1/4 (wall thickness)
+
+num = ((1-vp**2)/Ep) + ((1-varm**2)/Earm)
+denom = (1/(pd/1000) - 1/(ph/1000))
+b = ((2 * Fapp)/(np.pi * (l/1000)) * num/denom)**0.5
+print("CONTACT WIDTH: b =", 2 * b * 1000, "mm")
+pmax = 2 * Fapp / (np.pi * (b*1000) * l) # n/mm**2
+print("CONTACT STRESS: pmax =", pmax, "MPa")
+
+### Deflection in Z direction, superposition of all
+# Simple supports - overhanging load
+FdefZ_tot = Ft1V[2] + Ft2V[2] + WbreV[2] + FresV[2]
+L_m = L / 1000
+w = warm  / (L_m)
+Iarm_m = Iarm / (1000**4)
+
+totdef_z = w / (64 * Earm * Iarm_m) * L_m**4 - FdefZ_tot * L_m**2 / (6 * Earm * Iarm_m)
+print("Z DEFLECTION AT END OF BEAM =,", totdef_z * 1000, "mm")
+
+### Deflection in y direction, superposition of all
+totdef_y = (-1 * Mpin_arm[2]/1000) * L_m**2 / (2 * Earm * Iarm_m)
+print("Y DEFLECTION @ END OF BEAM =,", totdef_y*1000, "mm")
+
+### Deflection in x direction, superposition of all
+P = FactV[0] + Ft1V[0] + Ft2V[0] + FresV[0]
+Aarm_m = Aarm / (1000**2)
+# print("Aarm =", Aarm)
+totdef_x = P * L_m / (Aarm_m * Earm)
+print("X DEFLECTION @ END OF BEAM =,", totdef_x*1000, "mm")
+
+
+## Torsional Deflection
+# T = -1 * Mpin_arm[0] / 1000
+T = (MFres[0] + MFt1[0] + MFt2[0]) / 1000
+r = armod / 2 / 1000
+J = Jarm / 1000**4
+G = Earm / (2 * (1 + varm))
+totdef_tor = T * r / (G * J)
+print("TORSIONAL DEFLECTION @ END OF BEAM =", totdef_tor*180/np.pi, "deg")
