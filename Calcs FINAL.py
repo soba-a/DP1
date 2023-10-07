@@ -16,14 +16,29 @@ blade_dia = 8 * 25.4 # in mm
 # assume lpiv is in line with lblade #design
 cpiv_off = -25
 
-# arm design: 6061 Aluminum, 1/4" walls, 1" OD
-warm = 1.693 * 9.81
+# THINGS TO CHANGE:############################################
+# arm_density = 2.7 / 10**3 ########################## WAS NOT CHANGED BC WE HAVE UNIT WEIGHT
+unit_weight = 76.5
+armod = 1.375 * 25.4; # design of arm diameterm mm #############################
+armid = 0 * 25.4 # inner diameter of arm, mm #############################
+ys = 54000 / 145.03773773 # in MPa # design
+# ys = 276
+
+pd = 0.25 * 25.4 # pin diameter in mm #############################
+Ep = 190 * 10**9 # modulus of elasticity in Pa, converted from GPa
+vp = 0.28 # possion's ratio
+Earm = 207 * 10**9 # modulus of elasticity in Pa, converted from GPa
+varm = 0.292 # possion's ratio
+# arm design:
+
 L = 410.07
 L_m = L / 1000 # in m
-armod = 2 * 25.4; # design of arm diameterm mm #############################
-armid = 1.5 * 25.4 # inner diameter of arm, mm #############################
 
-# Iarm = np.pi * (armd)**4 / 64 # solid
+vol = (np.pi/4) * ((armod)**2 - (armid)**2) * 450 # in m^3
+# warm = arm_density * vol * 9.81
+warm = unit_weight * vol * 1000 / 1000**3 #using unit weight
+
+# Iarm = np.pi * (armod)**4 / 64 # solid
 Iarm = np.pi * (armod)**4 / 64 - np.pi  * (armid)**4 / 64 # hollow
 Iarm_m = Iarm / (1000**4)
 # print("I =", Iarm)
@@ -34,21 +49,17 @@ Jarm_m = Jarm / (1000**4)
 Aarm = np.pi / 4 * ((armod)**2 - (armid)**2) # hollow
 Aarm_m = Aarm / (1000**2)
 
-ys = 35000 / 145.03773773 # in MPa # design
+
 ys_safety = ys / 2
 
 # PIN DESIGN
 # pin details: 4140 Alloy Steel
-pd = 0.25 * 25.4 # pin diameter in mm #############################
-Ep = 190 * 10**9 # modulus of elasticity in Pa, converted from GPa
-vp = 0.28 # possion's ratio
 
 # arm details: 6061 Aluminum, 1/4" walls, 1" OD
 # this on on the hole! using h8f7 tolerance
-armw = (armod - armid) / 2
+armw = (armod - armid) / 2 # wall thickness
 ph = pd + 0.022 # pin hole diameter in mm
-Earm = 71.7 * 10**9 # modulus of elasticity in Pa, converted from GPa
-varm = 0.333 # possion's ratio
+
 
 ####### SOLVING HERE
 #######
@@ -64,7 +75,6 @@ varm = 0.333 # possion's ratio
 
 # Solve for torque (1)
 torqueBlade = 1 * 9550 / 4600 * 1000 # n *mm
-
 # through blade fbd
 Fresx = -torqueBlade / 101.6
 # print('Fresx =',Fresx)
@@ -83,6 +93,14 @@ Ft1_loc = sp.Matrix([L, -100, cpiv_off + 25 + pul_PD/2]).T
 Ft2_loc = sp.Matrix([L, -100, cpiv_off + 25 - pul_PD/2]).T
 Wbre_loc = sp.Matrix([L, 0, cpiv_off + 25]).T
 Fres_loc = sp.Matrix([L, 65, cpiv_off + 25 - blade_dia/2]).T
+# print("LOCATIONS =======================")
+# print("Rpiv_loc =", Rpiv_loc)
+# print("Ract_loc =", Ract_loc)
+# print("Warm_loc =", Warm_loc)
+# print("Ft1_loc =", Ft1_loc)
+# print("Ft2_loc =", Ft2_loc)
+# print("Wbre_loc =", Wbre_loc)
+# print("Fres_loc =", Fres_loc)
 
 # angles of pulley forces, assuming pulleys are in line & actuator
 beta = np.arctan(410.07/(50.8-38.1)) # pulley
@@ -178,7 +196,7 @@ FactV = RactV
 ############################################
 # rotate coords https://www.vcalc.com/wiki/vCalc/Circle%20-%20Radius%20from%20chord%20length%20and%20arc%20height
 r = 853.2870245 # radius of curvature
-theta_prime = np.pi/2 - np.arcsin((r - 25) / r)
+theta_prime = np.pi/2 + np.arcsin((r - 25) / r)
 
 A = sp.Matrix([[np.cos(theta_prime), 0, np.sin(theta_prime)], [0, 1, 0], [-1 * np.sin(theta_prime), 0, np.cos(theta_prime)]])
 # Forces in A coords
@@ -279,16 +297,19 @@ p2rz2_sol = sp.solve(sysEq3, [p2rx1, p2rz1, p2rx2, p2rz2])[p2rz2]
 
 # print pin reaction forces! pin 1 = pivot | pin2 = actuator
 # print("PIN REACTION FORCES! SOLVED! =======================")
+# print("PIN1=========")
+# print("RPivV =", RpivV)
 # print("p1rx1_sol =", p1rx1_sol)
 # print("p1rz1_sol =", p1rz1_sol)
 # print("p1rx2_sol =", p1rx2_sol)
 # print("p1rz2_sol =", p1rz2_sol)
-
+# print("PIN 2=========")
+# print("RactV =", RactV)
 # print("p2rx1_sol =", p2rx1_sol)
 # print("p2rz1_sol =", p2rz1_sol)
 # print("p2rx2_sol =", p2rx2_sol)
 # print("p2rz2_sol =", p2rz2_sol)
-
+# quit()
 ###### PIN DESIGN CHECKS
 # check pin 1
 RpivV_norm = (RpivV[0]**2 + RpivV[1]**2 + RpivV[2]**2)**0.5
@@ -332,10 +353,10 @@ My_actuator_total = My_actuator + Mwarm_actuator
 # # print("My_actuator_total =", My_actuator_total)
 
 # Limiting axial load (6)
-peak_axial_load = RpivV_A[0] #N
+peak_axial_load = -1 * RpivV_A[0] #N
 peak_bend_moment_x = Mpin_arm_A[0] #Nmm
 peak_bend_moment_y = My_actuator_total[1] #Nmm
-peak_bend_moment_z = Mpin_arm_A[2] #Nmm
+peak_bend_moment_z = -1 * Mpin_arm_A[2] #Nmm
 peak_torque = peak_bend_moment_x #nmm
 
 print("================== PEAK LOADS ==================")
@@ -367,7 +388,7 @@ vonmise_sigma = (sigma_x**2 + 3 * txy**2)**0.5
 M = peak_bend_moment_y
 sigma_bending_y = M*y / Iarm * rn / ((armod)/2)
 
-### Calculate Stress Concentration at Pin
+### Calculate Stress Concentration at Pin 
 # Bending Stress Concentration, A-16 Shigley
 print("================== STRESS CONCENTRATION AT PIN ==================")
 # bending
@@ -376,19 +397,13 @@ print("d/D ratio =", d_D_ratio)
 a_D_ratio = ph/armod
 print("a/D ratio =", a_D_ratio)
 print("===================================")
-d_D_interp_vals = [0.6, 0.9]
-a_D_interp_vals = [0.125, 0.15]
-d_D_interp_A_val_1 = [0.82, 0.82] # top row
-d_D_interp_K_val_1 = [2.32, 2.41] # top row
-d_D_interp_A_val_2 = [0.79, 0.79] # bottom row
-d_D_interp_K_val_2 = [2.29, 2.39] # bottom row
-d_D_interp_val_A = [np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_A_val_1), np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_A_val_2)]
-d_D_interp_val_K = [np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_K_val_1), np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_K_val_2)]
-# print(d_D_interp_val_A, d_D_interp_val_K)
-A_val_bending = np.interp(a_D_ratio, a_D_interp_vals, d_D_interp_val_A)
-K_val_bending = np.interp(a_D_ratio, a_D_interp_vals, d_D_interp_val_K)
-# print("A_val_bending =", A_val_bending)
-# print("K_val_bending =", K_val_bending)
+a_D_interp_vals = [0.175, 0.2]
+a_D_interp_vals_A = [0.68, 0.72]
+a_D_interp_vals_K = [2.07, 2.1]
+A_val_bending = np.interp(a_D_ratio, a_D_interp_vals, a_D_interp_vals_A)
+K_val_bending = np.interp(a_D_ratio, a_D_interp_vals, a_D_interp_vals_K)
+print("A_val_bending =", A_val_bending)
+print("K_val_bending =", K_val_bending)
 
 Znet = ((np.pi) * A_val_bending) / (32 * armod) * (armod**4 - armid**4)
 M = peak_bend_moment_z
@@ -397,44 +412,37 @@ stress_conc_bending = K_val_bending * sigma_nom
 print("Stress Concentration Bending =", stress_conc_bending, "MPa")
 
 # Torsion
-d_D_interp_vals = [0.6, 0.8]
-a_D_interp_vals = [0.125, 0.15]
-d_D_interp_A_val_1 = [0.90, 0.91] # top row
-d_D_interp_K_val_1 = [1.70, 1.74] # top row
-d_D_interp_A_val_2 = [0.87, 0.89] # bottom row
-d_D_interp_K_val_2 = [1.69, 1.75] # bottom row
-d_D_interp_val_A = [np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_A_val_1), np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_A_val_2)]
-d_D_interp_val_K = [np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_K_val_1), np.interp(d_D_ratio, d_D_interp_vals, d_D_interp_K_val_2)]
-# print(d_D_interp_val_A, d_D_interp_val_K)
-A_val_torsion = np.interp(a_D_ratio, a_D_interp_vals, d_D_interp_val_A)
-K_val_torsion = np.interp(a_D_ratio, a_D_interp_vals, d_D_interp_val_K)
-# print("A_val_torsion =", A_val_torsion)
-# print("K_val_torsion =", K_val_torsion)
+a_D_interp_vals = [0.175, 0.2]
+a_D_interp_vals_A = [0.83, 0.85]
+a_D_interp_vals_K = [1.58, 1.6]
+A_val_torsion = np.interp(a_D_ratio, a_D_interp_vals, a_D_interp_vals_A)
+K_val_torsion = np.interp(a_D_ratio, a_D_interp_vals, a_D_interp_vals_K)
+print("A_val_torsion =", A_val_torsion)
+print("K_val_torsion =", K_val_torsion)
 
 Jnet = (np.pi * A_val_torsion * (armod**4 - armid**4)) / (32)
 tau_nom = (peak_torque * armod) / (2*Jnet)
 tau_conc_torsion = K_val_torsion * tau_nom
 print("Stress Concentration Torsion =", tau_conc_torsion, "MPa")
 
-# axial
-c1 = 3
-c2 = 0.427 - 6.770*(armid/armod) + 22.698*(armid/armod)**2 - 16.670*(armid/armod)**3
-c3 = 11.357 + 15.665*(armid/armod) - 60.929*(armid/armod)**2 + 41.501*(armid/armod)**3
-Ktg = c1 + c2 * (ph/armod) + c3*(ph/armod)**2
-sigma_conc_axial = Ktg * sigma_axial
-print("Stress Concentration Axial =", sigma_conc_axial, "MPa")
-
+# Tension
+print("A15-1 RATIO:", ph/armod)
+print("K TENSION: 2.52")
+A2 = (armod - ph) * armod
+sigma_nom_tension = peak_axial_load/ A2
+sigma_conc_tension = 2.52 * sigma_nom_tension
+print("Stress Concentration, Tension:", sigma_conc_tension, "MPa")
 
 ### Calculate pin arm contact stresses
 Fapp = RpivV[0]
-# print("Fapp =", Fapp)
+print("Fapp =", Fapp)
 
-l = (armw) #length of contact patch is 1/4 (wall thickness) mm
+l = (armod) #length of contact patch is 1/4 (wall thickness) mm
 
 num = ((1-vp**2)/Ep) + ((1-varm**2)/Earm)
 denom = (1/(pd/1000) - 1/(ph/1000))
 b = ((2 * Fapp)/(np.pi * (l/1000)) * num/denom)**0.5
-# print("CONTACT WIDTH: b =", 2 * b * 1000, "mm")
+print("CONTACT WIDTH: b =", 2 * b * 1000, "mm")
 pmax = 2 * Fapp / (np.pi * (b*1000) * l) # n/mm**2
 
 # print maximum stresses

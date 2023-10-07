@@ -16,14 +16,29 @@ blade_dia = 8 * 25.4 # in mm
 # assume lpiv is in line with lblade #design
 cpiv_off = -25
 
-# arm design: 6061 Aluminum, 1/4" walls, 1" OD
-warm = 1.693 * 9.81
+# THINGS TO CHANGE:############################################
+# arm_density = 2.7 / 10**3 ########################## WAS NOT CHANGED BC WE HAVE UNIT WEIGHT
+unit_weight = 26.6
+armod = 2 * 25.4; # design of arm diameterm mm #############################
+armid = 1.75 * 25.4 # inner diameter of arm, mm #############################
+# ys = 47900 / 145.03773773 # in MPa # design
+ys = 276
+
+pd = 0.25 * 25.4 # pin diameter in mm #############################
+Ep = 190 * 10**9 # modulus of elasticity in Pa, converted from GPa
+vp = 0.28 # possion's ratio
+Earm = 68.9 * 10**9 # modulus of elasticity in Pa, converted from GPa
+varm = 0.33 # possion's ratio
+# arm design:
+
 L = 410.07
 L_m = L / 1000 # in m
-armod = 2 * 25.4; # design of arm diameterm mm #############################
-armid = 1.5 * 25.4 # inner diameter of arm, mm #############################
 
-# Iarm = np.pi * (armd)**4 / 64 # solid
+vol = (np.pi/4) * ((armod)**2 - (armid)**2) * 450 # in m^3
+# warm = arm_density * vol * 9.81
+warm = unit_weight * vol * 1000 / 1000**3 #using unit weight
+
+# Iarm = np.pi * (armod)**4 / 64 # solid
 Iarm = np.pi * (armod)**4 / 64 - np.pi  * (armid)**4 / 64 # hollow
 Iarm_m = Iarm / (1000**4)
 # print("I =", Iarm)
@@ -34,21 +49,17 @@ Jarm_m = Jarm / (1000**4)
 Aarm = np.pi / 4 * ((armod)**2 - (armid)**2) # hollow
 Aarm_m = Aarm / (1000**2)
 
-ys = 35000 / 145.03773773 # in MPa # design
+
 ys_safety = ys / 2
 
 # PIN DESIGN
 # pin details: 4140 Alloy Steel
-pd = 0.25 * 25.4 # pin diameter in mm #############################
-Ep = 190 * 10**9 # modulus of elasticity in Pa, converted from GPa
-vp = 0.28 # possion's ratio
 
 # arm details: 6061 Aluminum, 1/4" walls, 1" OD
 # this on on the hole! using h8f7 tolerance
-armw = (armod - armid) / 2
+armw = (armod - armid) / 2 # wall thickness
 ph = pd + 0.022 # pin hole diameter in mm
-Earm = 71.7 * 10**9 # modulus of elasticity in Pa, converted from GPa
-varm = 0.333 # possion's ratio
+
 
 ####### SOLVING HERE
 #######
