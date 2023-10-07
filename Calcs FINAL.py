@@ -1,8 +1,8 @@
 import sympy as sp
 import numpy as np
 import math as m
-# THIS IS THE ORIGINAL, 
-# rx, ry, rz, warm, fact = sp.symbols('rx, ry, rz, warm, fact')
+
+# declare symbols for calculations
 rx, ry, rz, fact = sp.symbols('rx, ry, rz, fact')
 
 # givens:
@@ -29,8 +29,8 @@ Ep = 190 * 10**9 # modulus of elasticity in Pa, converted from GPa
 vp = 0.28 # possion's ratio
 Earm = 207 * 10**9 # modulus of elasticity in Pa, converted from GPa
 varm = 0.292 # possion's ratio
-# arm design:
 
+# arm design:
 L = 410.07
 L_m = L / 1000 # in m
 
@@ -41,21 +41,20 @@ warm = unit_weight * vol * 1000 / 1000**3 #using unit weight
 # Iarm = np.pi * (armod)**4 / 64 # solid
 Iarm = np.pi * (armod)**4 / 64 - np.pi  * (armid)**4 / 64 # hollow
 Iarm_m = Iarm / (1000**4)
-# print("I =", Iarm)
+# print("I =", Iarm/(1000**4))
+
 Jarm = np.pi * (armod)**4 / 32 - np.pi  * (armid)**4 / 32 # hollow
 Jarm_m = Jarm / (1000**4)
-# print("J =", Jarm)
+# print("J =", Jarm_m)
 # Aarm = np.pi * (armd)**2 / 4 # solid
 Aarm = np.pi / 4 * ((armod)**2 - (armid)**2) # hollow
 Aarm_m = Aarm / (1000**2)
 
-
 ys_safety = ys / 2
 
-# PIN DESIGN
+##############3 PIN DESIGN
 # pin details: 4140 Alloy Steel
 
-# arm details: 6061 Aluminum, 1/4" walls, 1" OD
 # this on on the hole! using h8f7 tolerance
 armw = (armod - armid) / 2 # wall thickness
 ph = pd + 0.022 # pin hole diameter in mm
@@ -106,7 +105,7 @@ Fres_loc = sp.Matrix([L, 65, cpiv_off + 25 - blade_dia/2]).T
 beta = np.arctan(410.07/(50.8-38.1)) # pulley
 theta = np.arctan((150 + (-1 * cpiv_off)) / (L/2)) # actuator
 
-# Remember, FactV = Ract! These values are irregardless of location
+# Remember, FactV = Ract! These values are regardless of location
 # RpivV = sp.Matrix([rx, ry, rz]).T
 RpivV = sp.Matrix([rx, 0, rz]).T # set ry = 0, resistance force on arm by pin1
 RactV = sp.Matrix([fact * sp.cos(theta), 0, -fact * sp.sin(theta)]).T # resistance force on arm by pin2, we know it = fact
@@ -194,7 +193,6 @@ FactV = RactV
 # print("Mpin_arm =", Mpin_arm)
 
 ############################################
-# rotate coords https://www.vcalc.com/wiki/vCalc/Circle%20-%20Radius%20from%20chord%20length%20and%20arc%20height
 r = 853.2870245 # radius of curvature
 theta_prime = np.pi/2 + np.arcsin((r - 25) / r)
 
@@ -309,7 +307,7 @@ p2rz2_sol = sp.solve(sysEq3, [p2rx1, p2rz1, p2rx2, p2rz2])[p2rz2]
 # print("p2rz1_sol =", p2rz1_sol)
 # print("p2rx2_sol =", p2rx2_sol)
 # print("p2rz2_sol =", p2rz2_sol)
-# quit()
+
 ###### PIN DESIGN CHECKS
 # check pin 1
 RpivV_norm = (RpivV[0]**2 + RpivV[1]**2 + RpivV[2]**2)**0.5
@@ -352,7 +350,7 @@ My_actuator_total = My_actuator + Mwarm_actuator
 # My_actuator_total = My_actuator + Mwarm_actuator + Mract_actuator
 # # print("My_actuator_total =", My_actuator_total)
 
-# Limiting axial load (6)
+# peak loads (6)
 peak_axial_load = -1 * RpivV_A[0] #N
 peak_bend_moment_x = Mpin_arm_A[0] #Nmm
 peak_bend_moment_y = My_actuator_total[1] #Nmm
